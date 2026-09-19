@@ -1,4 +1,4 @@
-# E-Commerce Customer Segmentation Engine
+﻿# E-Commerce Customer Segmentation Engine
 
 An end-to-end customer analytics pipeline built on a synthetic Indian e-commerce transactions dataset (~34,500 orders / 7,903 customers). The project moves from raw order data to RFM-based segmentation, unsupervised clustering, probabilistic Customer Lifetime Value (CLV) forecasting, and a marketing insights dashboard.
 
@@ -36,7 +36,7 @@ E-commerce businesses can't treat every customer the same — a customer who ord
 
 The raw dataset spans Sep 2023 – Sep 2025 across 7 product categories and 5 regions.
 
-![Dataset Overview](images/Dataset%20overview.png)
+![Dataset Overview](images/dataset-overview.png)
 
 - **Order volume** is stable at ~1,350–1,500 orders/month, with a partial final month (data cutoff).
 - **Category mix** is fairly balanced, led by Fashion and Electronics; Grocery and Beauty are the smallest.
@@ -48,19 +48,19 @@ The raw dataset spans Sep 2023 – Sep 2025 across 7 product categories and 5 re
 
 Each customer was scored on **Recency** (days since last order), **Frequency** (order count), and **Monetary** (total spend) using quintile scoring (1 = worst, 5 = best).
 
-![Raw Distributions](images/2.%20Raw%20Distribution%20.png)
-![Score Distributions](images/2.%20Score%20Distribution%20.png)
+![Raw Distributions](images/2-raw-distribution.png)
+![Score Distributions](images/2-score-distribution.png)
 
 Median customer: last ordered **115 days ago**, with **4 orders** and **₹494** total spend — a highly right-skewed monetary distribution typical of e-commerce, where a small set of customers drive disproportionate revenue.
 
 Combining R and F scores against average spend shows frequency, not recency, is the stronger driver of monetary value:
 
-![RFM Heatmap](images/2.RFM%20Heat%20map.png)
+![RFM Heatmap](images/2-rfm-heat-map.png)
 
 Customers were then mapped into 7 standard rule-based RFM segments (Champions, Loyal Customers, Potential Loyalists, Needs Attention, At Risk, Can't Lose Them, Hibernating):
 
-![Segments and Spend](images/2.%20Customer%20segments%20and%20spending%20.png)
-![Scatter by Segment](images/2.%20Customer%20Scatter%20Plot%20by%20Segments.png)
+![Segments and Spend](images/2-customer-segments-and-spending.png)
+![Scatter by Segment](images/2-customer-scatter-plot-by-segments.png)
 
 **Segment snapshot:**
 
@@ -80,12 +80,12 @@ Customers were then mapped into 7 standard rule-based RFM segments (Champions, L
 
 To validate the rule-based segments with an unsupervised approach, K-Means was applied to normalized RFM features.
 
-![Optimal K](images/3.%20Optimal%20K.png)
+![Optimal K](images/3-optimal-k.png)
 
 The elbow method flattens out and silhouette score technically peaks at k=2, but **k=4 was chosen** as the best trade-off between statistical separation and business interpretability — it produces distinct, actionable groups rather than an overly coarse split.
 
-![Cluster Size and Spend](images/3.%20Cluster%20size%20and%20avg%20spend.png)
-![Cluster Profile](images/3.Cluster%20Profile.png)
+![Cluster Size and Spend](images/3-cluster-size-and-avg-spend.png)
+![Cluster Profile](images/3-cluster-profile.png)
 
 **4 behavioral clusters:**
 
@@ -98,11 +98,11 @@ The elbow method flattens out and silhouette score technically peaks at k=2, but
 
 Projecting the clusters onto their top 2 principal components (86.9% of variance explained) shows clean, well-separated groupings:
 
-![PCA Projection](images/3.PCA%20Projections.png)
+![PCA Projection](images/3-pca-projections.png)
 
 Comparing the K-Means clusters against the rule-based RFM segments confirms strong agreement (e.g. the Champions cluster is almost entirely rule-based Champions + Loyal Customers), while also revealing that "Core Regulars" absorbs customers spread across many rule-based labels — suggesting the rule-based segmentation may be **over-splitting** a fairly homogeneous middle group:
 
-![Cluster vs RFM Segment](images/3.Cluster%20vs%20Rule%20Based%20RFM%20segment.png)
+![Cluster vs RFM Segment](images/3-cluster-vs-rule-based-rfm-segment.png)
 
 ## Phase 4 — Customer Lifetime Value (CLV)
 
@@ -110,33 +110,33 @@ CLV was modeled probabilistically rather than via simple average-order-value ext
 
 A key modeling assumption — that spend per order is independent of purchase frequency — was validated first:
 
-![Frequency vs Monetary correlation](images/4.%20F%20vs%20M%20value.png)
+![Frequency vs Monetary correlation](images/4-f-vs-m-value.png)
 
 Correlation between frequency and average order value is essentially **zero (r = 0.021)**, confirming the two can be modeled independently, as the Gamma-Gamma model requires.
 
 **BG/NBD — expected future purchases:**
 
-![BG/NBD Expected Purchases](images/4.%20%20Expected%20purchase%20-%20BGNBD.png)
+![BG/NBD Expected Purchases](images/4-expected-purchase-bgnbd.png)
 
 On average, a customer is expected to make **0.53 purchases in the next 90 days, 1.06 in 180 days, and 2.09 in 365 days** — with a distinct spike at zero, representing one-time buyers the model correctly identifies as unlikely to return.
 
 **Resulting 180-day CLV distribution** is heavily right-skewed, as expected:
 
-![CLV Distribution](images/4.%20180%20Days%20CLV%20Distribution.png)
+![CLV Distribution](images/4-180-days-clv-distribution.png)
 
 Customers were then bucketed into value tiers using CLV thresholds (Bronze < ₹120, Silver ₹120–246, Gold ₹246–422, Platinum > ₹422):
 
-![CLV Tier Analysis](images/4.%20CLV%20Tier%20Analysis.png)
+![CLV Tier Analysis](images/4-clv-tier-analysis.png)
 
 This is the project's clearest business insight: **Platinum customers are only 10% of the base but are forecast to generate 37.3% of revenue over the next 180 days** — a textbook Pareto pattern. Gold + Platinum together (25% of customers) account for over 62% of forecast revenue.
 
 CLV also aligns well with the earlier RFM segments — Champions and Can't Lose Them post the highest median CLV, Hibernating the lowest:
 
-![CLV by RFM Segment](images/4.%20180%20Days%20Clv%20Distribution%20by%20RFM%20segment.png)
+![CLV by RFM Segment](images/4-180-days-clv-distribution-by-rfm-segment.png)
 
 The top individually forecasted customers (all Platinum tier) range from ~₹1,600 to ~₹3,600 in projected 180-day value — natural candidates for VIP retention treatment:
 
-![Top 20 Customers by CLV](images/4.%20Top%2020%20Customers%20by%20%20180%20CLV%20Forecast.png)
+![Top 20 Customers by CLV](images/4-top-20-customers-by-180-clv-forecast.png)
 
 ## Phase 5 — Marketing Insights Dashboard
 
